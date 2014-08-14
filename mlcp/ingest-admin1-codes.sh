@@ -9,7 +9,7 @@ mlcp.sh IMPORT \
   -delimited_root_name admin1Code \
   -namespace http://geonames.org/admin1Code \
   -options_file options.txt \
-  -output_uri_prefix "/geonames/admin1Code/" 
- # -transform_module "/xqy/lib/lib-admin1-codes.xqy" \
- # -transform_namespace "http://geonames.org/admin1Code"
+  -output_uri_prefix "/geonames/admin1Code/" \
+  -transform_module "/xqy/lib/lib-admin1-codes.xqy" \
+  -transform_namespace "http://geonames.org/admin1Code"
 

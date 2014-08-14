@@ -17,6 +17,14 @@ declare function geonames:transform(
         cts:element-value-query(xs:QName("fc:feature-code"), $doc//geonames:feature-code/text())
       ))
     )
+    (:
+  let $admin1-code :=
+    cts:search(
+      fn:collection("admin1Code"),
+      
+
+    )
+    :)
   let $params := map:map()
   let $_ :=
     (
