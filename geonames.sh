@@ -9,10 +9,15 @@ sed -i '1s/#//g' countryInfo.csv
 curl -O http://download.geonames.org/export/dump/admin1CodesASCII.txt
 sed -i '1 c\admin1_code	name	asciiname	geonamesid' admin1CodesASCII.txt
 
+curl -O http://download.geonames.org/export/dump/featureCodes_en.txt
+sed -i '1 c\feature-code	name	description' featureCodes_en.txt
+
 mkdir SC
 cd SC
 curl -O http://download.geonames.org/export/dump/SC.zip
 unzip SC.zip
 cd ../..
 ./headers.sh SC
+cd mlcp
+./ingest-geonames.sh SC
 
