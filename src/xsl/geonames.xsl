@@ -9,8 +9,10 @@
 
   <xsl:output method="xml" indent="yes" />
 
+  <xsl:param name="feature" />
+
   <xsl:template match="/feature">
-    <feature>
+    <geoname>
       <xsl:copy-of select="geonameid" />
       <names>
         <name tag="main"><xsl:value-of select="name/text()" /></name>
@@ -22,8 +24,7 @@
       <gml:Point srsDimension="2">
         <gml:pos><xsl:value-of select="latitude/text()" /><xsl:text> </xsl:text><xsl:value-of select="longitude/text()" /></gml:pos>
       </gml:Point>
-      <xsl:copy-of select="feature-class" />
-      <xsl:copy-of select="feature-code" />
+      <xsl:copy-of select="$feature" />
       <xsl:copy-of select="countrycode" />
       <xsl:copy-of select="cc2" />
       <xsl:copy-of select="admin1-code" />
@@ -35,7 +36,7 @@
       <digital-elevation-model><xsl:value-of select="dem/text()" /></digital-elevation-model>
       <xsl:copy-of select="timezone" />
       <xsl:copy-of select="modification-date" />
-    </feature>
+    </geoname>
   </xsl:template>
 
 </xsl:stylesheet>
