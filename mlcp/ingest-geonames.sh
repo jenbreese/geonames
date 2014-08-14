@@ -7,7 +7,7 @@ mlcp.sh IMPORT \
   -password admin \
   -input_file_path ../data/$COUNTRY/$COUNTRY.txt \
   -input_file_type delimited_text \
-  -output_collections "geonames,$COUNTRY" \
+  -output_collections "geonames,feature,$COUNTRY" \
   -delimited_root_name feature \
   -namespace http://geonames.org \
   -options_file options.txt \
