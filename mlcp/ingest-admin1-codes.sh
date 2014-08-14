@@ -5,7 +5,7 @@ mlcp.sh IMPORT \
   -password admin \
   -input_file_path ../data/admin1CodesASCII.txt \
   -input_file_type delimited_text \
-  -output_collections "admin1Code" \
+  -output_collections "geonames,admin1Code" \
   -delimited_root_name admin1Code \
   -namespace http://geonames.org/admin1Code \
   -options_file options.txt \
