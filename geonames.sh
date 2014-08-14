@@ -19,5 +19,6 @@ unzip SC.zip
 cd ../..
 ./headers.sh SC
 cd mlcp
+./ingest-feature-codes.sh
 ./ingest-geonames.sh SC
 
