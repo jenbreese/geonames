@@ -22,8 +22,8 @@
       <gml:Point srsDimension="2">
         <gml:pos><xsl:value-of select="latitude/text()" /><xsl:text> </xsl:text><xsl:value-of select="longitude/text()" /></gml:pos>
       </gml:Point>
-      <xsl:copy-of select="featureclass" />
-      <xsl:copy-of select="featurecode" />
+      <xsl:copy-of select="feature-class" />
+      <xsl:copy-of select="feature-code" />
       <xsl:copy-of select="countrycode" />
       <xsl:copy-of select="cc2" />
       <xsl:copy-of select="admin1-code" />
