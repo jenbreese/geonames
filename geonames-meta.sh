@@ -1,7 +1,5 @@
 #!/bin/bash
 
-country=SC
-
 mkdir data
 cd data
 
@@ -19,16 +17,7 @@ sed -i '1 c\admin2-code	name	asciiname	geonamesid' admin2Codes.txt
 curl -O http://download.geonames.org/export/dump/featureCodes_en.txt
 sed -i '1 c\feature-code	name	description' featureCodes_en.txt
 
-mkdir $country
-cd $country
-curl -O http://download.geonames.org/export/dump/$country.zip
-unzip $country.zip
-rm $country.zip
-cd ../..
-./headers.sh $country
-
-cd mlcp
+cd ../mlcp
 ./ingest-feature-codes.sh
 ./ingest-admin1-codes.sh
 ./ingest-admin2-codes.sh
-./ingest-geonames.sh $country

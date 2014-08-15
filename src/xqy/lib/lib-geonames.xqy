@@ -26,6 +26,7 @@ declare function geonames:transform(
         cts:element-value-query(xs:QName("a1:admin1-code"), $doc//geonames:admin1-code/text())
       ))
     )
+  let $admin2-code := ()
   let $params := map:map()
   let $_ :=
     (
