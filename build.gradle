@@ -1,0 +1,38 @@
+buildscript {
+  repositories {
+    mavenCentral()
+    maven {url "https://developer.marklogic.com/maven2/"}
+  }
+
+  dependencies {
+    classpath group:"com.marklogic", name:"ml-gradle", version"0.1+"
+  }
+}
+
+apply plugin: 'ml-gradle'
+
+
+ext {
+  mlEnv = "${properties["ml.env"]}"
+  mlHost = "${properties["ml." + mlEnv + ".host"]}"
+  mlManageUsername = "${properties["ml." + mlEnv + ".manage.username"]}"
+  mlManagePassword = "${properties["ml." + mlEnv + ".manage.password"]}"
+
+  mlAppConfig {
+    name = "geonames"
+    host = localhost
+    username = admin
+    password = admin
+    restPort = 8010
+    xdbcPort = 8011
+  }
+
+  mlManageConfig {
+    host = "localhost"
+    username = "admin"
+    password = "admin"
+    httpServerFilePath = "build/merged-http-server.xml"
+  }
+
+  mlBootstrapXccUrl = "xcc://admin:admin@localhost:8011"
+}
