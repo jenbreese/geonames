@@ -23,14 +23,15 @@ declare function geonames:transform(
       fn:collection("admin1Code"),
       cts:and-query((
         cts:element-value-query(xs:QName("a1:country-code"), $doc//geonames:country-code/text()),
-        cts:element-value-query(xs:QName("a1:admin1-code"), $doc//geonames:admin1-code/text())
+        cts:element-value-query(xs:QName("a1:code-id"), $doc//geonames:admin1-code/text())
       ))
     )
   let $admin2-code := ()
   let $params := map:map()
   let $_ :=
     (
-      map:put($params, "feature", $feature-code)
+      map:put($params, "feature", $feature-code),
+      map:put($params, "admin1-code", $admin1-code)
     )
   let $_ := 
     map:put(

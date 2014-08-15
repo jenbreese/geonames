@@ -10,10 +10,11 @@
   <xsl:output method="xml" indent="yes" />
 
   <xsl:param name="feature" />
+  <xsl:param name="admin1-code" />
 
   <xsl:template match="/feature">
     <geoname>
-      <xsl:copy-of select="geonameid" />
+      <id><xsl:value-of select="geonameid/text()" /></id>
       <names>
         <name tag="main"><xsl:value-of select="name/text()" /></name>
         <name tag="ascii"><xsl:value-of select="asciiname/text()" /></name>
@@ -27,7 +28,14 @@
       <xsl:copy-of select="$feature" />
       <xsl:copy-of select="country-code" />
       <xsl:copy-of select="cc2" />
-      <xsl:copy-of select="admin1-code" />
+      <xsl:choose>
+        <xsl:when test="fn:not($admin1-code)">
+          <admin1-code />       
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:copy-of select="$admin1-code" />
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:copy-of select="admin2-code" />
       <xsl:copy-of select="admin3-code" />
       <xsl:copy-of select="admin4-code" />
