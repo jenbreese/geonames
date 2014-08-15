@@ -3,8 +3,6 @@ mlcp.sh IMPORT \
   -port 8011 \
   -username admin \
   -password admin \
-  -batch_size 5 \
-  -transaction_size 5 \
   -input_file_path ../data/admin2Codes.txt \
   -input_file_type delimited_text \
   -output_collections "geonames,admin2Code" \
@@ -12,5 +10,7 @@ mlcp.sh IMPORT \
   -delimited_uri_id admin2-code \
   -namespace http://geonames.org/admin2Code \
   -options_file options.txt \
-  -output_uri_prefix "/geonames/admin2Code/"
+  -output_uri_prefix "/geonames/admin2Code/" \
+  -transform_module "/xqy/lib/lib-admin2-codes.xqy" \
+  -transform_namespace "http://geonames.org/admin2Code"
 
