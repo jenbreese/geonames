@@ -25,7 +25,7 @@
         <gml:pos><xsl:value-of select="latitude/text()" /><xsl:text> </xsl:text><xsl:value-of select="longitude/text()" /></gml:pos>
       </gml:Point>
       <xsl:copy-of select="$feature" />
-      <xsl:copy-of select="countrycode" />
+      <xsl:copy-of select="country-code" />
       <xsl:copy-of select="cc2" />
       <xsl:copy-of select="admin1-code" />
       <xsl:copy-of select="admin2-code" />
