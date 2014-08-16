@@ -51,12 +51,14 @@
         	<cts:text><xsl:value-of select="name/text()" /></cts:text>
         	<cts:option>exact</cts:option>
       	</cts:word-query>
+      	<!-- 
       	<xsl:for-each select="fn:tokenize(//alternatenames/text(), ',')">
           <cts:word-query>
           	<cts:text><xsl:value-of select="." /></cts:text>
           	<cts:option>exact</cts:option>
           </cts:word-query>
         </xsl:for-each>
+        -->
       </cts:or-query>
     </geoname>
   </xsl:template>
