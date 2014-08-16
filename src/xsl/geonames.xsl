@@ -12,7 +12,7 @@
 
   <xsl:param name="feature" />
   <xsl:param name="admin1-code" />
-  <xsl:param name="query" />
+  <xsl:param name="admin2-code" />
 
   <xsl:template match="/feature">
     <geoname>
@@ -38,7 +38,14 @@
           <xsl:copy-of select="$admin1-code" />
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:copy-of select="admin2-code" />
+      <xsl:choose>
+        <xsl:when test="fn:not($admin2-code)">
+          <admin2-code />       
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:copy-of select="$admin2-code" />
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:copy-of select="admin3-code" />
       <xsl:copy-of select="admin4-code" />
       <xsl:copy-of select="population" />
