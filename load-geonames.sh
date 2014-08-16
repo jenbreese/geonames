@@ -11,7 +11,6 @@ function loadCountry {
   rm -f readme.txt
   cd ../..
   ./headers.sh $1
-  cd data
 }
 
 mkdir data
@@ -20,6 +19,7 @@ cd data
 if [ "$COUNTRY" == "all" ]; then 
   for country in `cut -f 1 countryInfo.csv`; do
     loadCountry $country
+    cd data
   done
 else
   loadCountry $COUNTRY

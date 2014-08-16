@@ -2,15 +2,17 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:fn="http://www.w3.org/2005/xpath-functions"
   xmlns:xdmp="http://makrlogic.com/xdmp"
+  xmlns:cts="http://marklogic.com/cts"
   xmlns:gml="http://www.opengis.net/gml"
   xmlns="http://geonames.org"
   xpath-default-namespace="http://geonames.org"
-  exclude-result-prefixes="fn xdmp">
+  exclude-result-prefixes="fn xdmp cts">
 
   <xsl:output method="xml" indent="yes" />
 
   <xsl:param name="feature" />
   <xsl:param name="admin1-code" />
+  <xsl:param name="query" />
 
   <xsl:template match="/feature">
     <geoname>
@@ -44,6 +46,18 @@
       <digital-elevation-model><xsl:value-of select="dem/text()" /></digital-elevation-model>
       <xsl:copy-of select="timezone" />
       <xsl:copy-of select="modification-date" />
+      <cts:or-query>
+      	<cts:word-query>
+        	<cts:text><xsl:value-of select="name/text()" /></cts:text>
+        	<cts:option>exact</cts:option>
+      	</cts:word-query>
+      	<xsl:for-each select="fn:tokenize(//alternatenames/text(), ',')">
+          <cts:word-query>
+          	<cts:text><xsl:value-of select="." /></cts:text>
+          	<cts:option>exact</cts:option>
+          </cts:word-query>
+        </xsl:for-each>
+      </cts:or-query>
     </geoname>
   </xsl:template>
 
