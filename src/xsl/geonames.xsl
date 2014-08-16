@@ -1,18 +1,20 @@
 <xsl:stylesheet version="2.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:fn="http://www.w3.org/2005/xpath-functions"
   xmlns:xdmp="http://makrlogic.com/xdmp"
   xmlns:cts="http://marklogic.com/cts"
   xmlns:gml="http://www.opengis.net/gml"
   xmlns="http://geonames.org"
   xpath-default-namespace="http://geonames.org"
-  exclude-result-prefixes="fn xdmp cts">
+  exclude-result-prefixes="fn xdmp cts xs">
 
   <xsl:output method="xml" indent="yes" />
 
   <xsl:param name="feature" />
   <xsl:param name="admin1-code" />
   <xsl:param name="admin2-code" />
+  <xsl:param name="add-query" />
 
   <xsl:template match="/feature">
     <geoname>
@@ -53,11 +55,14 @@
       <digital-elevation-model><xsl:value-of select="dem/text()" /></digital-elevation-model>
       <xsl:copy-of select="timezone" />
       <xsl:copy-of select="modification-date" />
-      <cts:or-query>
-      	<cts:word-query>
-        	<cts:text><xsl:value-of select="name/text()" /></cts:text>
-        	<cts:option>exact</cts:option>
-      	</cts:word-query>
+      <xsl:if test="fn:not(fn:empty($add-query))">
+      	<cts:or-query>
+      		<cts:word-query>
+	        	<cts:text><xsl:value-of select="name/text()" /></cts:text>
+        		<cts:option>exact</cts:option>
+      		</cts:word-query>
+      	</cts:or-query>
+      </xsl:if>
       	<!-- 
       	<xsl:for-each select="fn:tokenize(//alternatenames/text(), ',')">
           <cts:word-query>
@@ -66,7 +71,6 @@
           </cts:word-query>
         </xsl:for-each>
         -->
-      </cts:or-query>
     </geoname>
   </xsl:template>
 

@@ -6,6 +6,19 @@ declare namespace fc = "http://geonames.org/featureCodes";
 declare namespace a1 = "http://geonames.org/admin1Code";
 declare namespace a2 = "http://geonames.org/admin2Code";
 
+declare function geonames:filter-name(
+  $name as xs:string
+ ) as xs:string {
+  (: filter list came from an earlier WB POC :)
+  (: https://github.com/marklogic/WBG-POC-II/blob/b754f31acd55f2f3f12bafee0b7a4fc4b9c3a20b/poc-roxy/src/pipelines/email-city-process.xqy :)
+  let $ignoredNames := ("A", "As", "Com", "Due", "I", "Phone", "Car", "In", "Bank", "Asia", "CEO", "An", "At", "January", "February", "March", "April", "May",
+                        "June", "July", "August", "September", "October", "November", "December", "DLI", "TPA", "We", "From", "Makes", "Re", "Deal", "Gap",
+                        "St", "Date", "List", "Street", "Best", "See", "Starbuck", "Tool", "College", "University", "Used", "Along", "Center", "Centre",
+                        "Grant", "Harding", "Job", "Lab", "Lead", "Manage", "Minor", "Mission", "Mobile", "Most", "Philip", "Plan", "Post", "Progress", "Ward",
+                        "George", "Central", "Gram", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Gantt")
+  return $name[fn:string-length(.) gt 2]
+};
+
 declare function geonames:transform(
   $content as map:map,
   $context as map:map
@@ -40,7 +53,8 @@ declare function geonames:transform(
     (
       map:put($params, "feature", $feature-code),
       map:put($params, "admin1-code", $admin1-code),
-      map:put($params, "admin2-code", $admin2-code)
+      map:put($params, "admin2-code", $admin2-code),
+      map:put($params, "add-query", geonames:filter-name($doc//geonames:names/geonames:name[@tag = "main"]/text()))
     )
   let $_ := 
     map:put(
