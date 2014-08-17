@@ -5,9 +5,9 @@ mlcp.sh IMPORT \
   -password admin \
   -input_file_path ../data/countryInfo.csv \
   -input_file_type delimited_text \
-  -output_collections "countryInfo" \
+  -output_collections "geonames,countryInfo" \
   -delimited_root_name country \
   -namespace http://geonames.org/countryInfo \
   -options_file options.txt \
-  -output_uri_prefix "/countryInfo/"
+  -output_uri_prefix "/geonames/country/"
 

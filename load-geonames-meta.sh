@@ -18,6 +18,7 @@ curl -O http://download.geonames.org/export/dump/featureCodes_en.txt
 sed -i '1 c\feature-code	name	description' featureCodes_en.txt
 
 cd ../mlcp
+./ingest-country-codes.sh
 ./ingest-feature-codes.sh
 ./ingest-admin1-codes.sh
 ./ingest-admin2-codes.sh
