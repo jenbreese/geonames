@@ -55,10 +55,14 @@
       <digital-elevation-model><xsl:value-of select="dem/text()" /></digital-elevation-model>
       <xsl:copy-of select="timezone" />
       <xsl:copy-of select="modification-date" />
-      <xsl:if test="fn:not(fn:empty($add-query))">
+      <xsl:if test="$add-query = 'true'">
       	<cts:or-query>
       		<cts:word-query>
 	        	<cts:text><xsl:value-of select="name/text()" /></cts:text>
+        		<cts:option>exact</cts:option>
+      		</cts:word-query>
+      		<cts:word-query>
+	        	<cts:text><xsl:value-of select="asciiname/text()" /></cts:text>
         		<cts:option>exact</cts:option>
       		</cts:word-query>
       	</cts:or-query>

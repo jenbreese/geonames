@@ -16,7 +16,10 @@ declare function geonames:filter-name(
                         "St", "Date", "List", "Street", "Best", "See", "Starbuck", "Tool", "College", "University", "Used", "Along", "Center", "Centre",
                         "Grant", "Harding", "Job", "Lab", "Lead", "Manage", "Minor", "Mission", "Mobile", "Most", "Philip", "Plan", "Post", "Progress", "Ward",
                         "George", "Central", "Gram", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Gantt")
-  return $name[fn:string-length(.) gt 2]
+  let $name := if (fn:count($name[. = $ignoredNames]) gt 0) then () else $name 
+  let $name := $name[fn:string-length(.) gt 2]
+  return 
+    if (fn:empty($name)) then "false" else "true"
 };
 
 declare function geonames:transform(
