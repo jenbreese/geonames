@@ -1,6 +1,16 @@
 #!/bin/bash
 
+COUNTRY=$1
+
 cd mlcp
-for COUNTRY in `cut -f 1 ../data/countryInfo.csv`; do
+
+if [ "$COUNTRY" == "all" ]; then 
+  for country in `cut -f 1 countryInfo.csv`; do
+    ./ingest-geonames.sh $country
+  done
+else
   ./ingest-geonames.sh $COUNTRY
-done
+fi
+
+cd ..
+
