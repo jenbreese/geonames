@@ -11,3 +11,16 @@ buildscript {
 }
 
 apply plugin: 'ml-gradle'
+
+ext {
+
+  mlAppConfig {
+    name = "geonames"
+    host = "localhost"
+    username = "admin"
+    password = "admin"
+    restPort = 8010
+    xdbcPort = 8011
+  }
+
+}
