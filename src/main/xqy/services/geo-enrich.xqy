@@ -6,10 +6,10 @@ declare namespace gn = "http://geonames.org";
 declare namespace html = "http://www.w3.org/1999/xhtml";
 
 
-declare function get(
+declare function geo:get(
   $context as map:map,
   $params  as map:map
-  ) as document-node()*
+) as document-node()*
 {
 	let $text := text{ map:get($params, "text") }
 	let $country-code as xs:string := map:get($params, "country-code")
@@ -36,3 +36,13 @@ declare function get(
         </html:html>
 	  }
 };
+
+declare function geo:post(
+    $context as map:map,
+    $params  as map:map,
+    $input   as document-node()*
+) as document-node()* {
+  document{ <null /> }
+};
+
+

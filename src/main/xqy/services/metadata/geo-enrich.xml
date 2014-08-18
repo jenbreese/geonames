@@ -9,4 +9,9 @@
     <param name="text" />
     <param name="country-code" />
   </method>  
+  <method name="POST">
+  	<param name="content" />
+  	<param name="country-code" />
+  	<param name="feature-type" />
+  </method>
 </metadata>
