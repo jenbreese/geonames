@@ -18,28 +18,30 @@ The MarkLogic geonames project is a simple location extractor and enrichment ser
 4. Remove any CPF domains from the geonames-content database
 
 ### Downloading Geonames
+
 The geonames data is downloaded into a directory called data/.  The geonames metadata needs to be downloaded and loaded first before downloading any of the country data.  There is a script called headers.sh that is used to put the the tab delimited header on the country files that are downloaded.  
 
 1) ./load-geonames-meta.sh
-This will download and load all the geonames metadata into MarkLogic: countryCodes, admin codes, feature codes
+* This will download and load all the geonames metadata into MarkLogic: countryCodes, admin codes, feature codes
 
 2) ./download-geonames.sh [2 character ISO Country Code | all]
-./download-geonames.sh SC  
-Downloads the geonames for Seychelles (a small data set)
+> ./download-geonames.sh SC  
+ * Downloads the geonames for Seychelles (a small data set)
 
-./download-geonames.sh FR
-Downloads and Loads the geonames for France
+> ./download-geonames.sh FR
+ * Downloads and Loads the geonames for France
 
-./download-geonames.sh all
-Downloads every country
+> ./download-geonames.sh all
+ * Downloads every country
 
-3) ./load-geonames.sh [2 character ISO Country Code | all]
-Examples:
-./load-geonames.sh SC 
-Loads the Seychellles geonames dataset into MarkLogic via mlcp
+### Loading Geonames into MarkLogic
 
-./load-geonames.sh all
-Loads all countries into MarkLogic
+./load-geonames.sh [2 character ISO Country Code | all]
+> ./load-geonames.sh SC 
+ * Loads the Seychellles geonames dataset into MarkLogic via mlcp
+
+> ./load-geonames.sh all
+ * Loads all countries into MarkLogic
 
 ### API
 * Geonames API - http://<HOST>:8010/v1/resources/api
