@@ -63,7 +63,7 @@ declare function geonames:transform(
     map:put(
       $content, 
       "value", 
-      document{ xdmp:xslt-invoke("/xsl/geonames.xsl", $doc, $params) }
+      document{ xdmp:xslt-invoke("/ext/geonames/xsl/geonames.xsl", $doc, $params) }
     )
   return $content
 
