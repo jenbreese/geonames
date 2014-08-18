@@ -484,15 +484,26 @@
       <path-namespaces/>
       <range-path-indexes/>
       <fields>
-	<field>
-	  <field-name/>
-	  <include-root>true</include-root>
-	  <included-elements/>
-	  <excluded-elements/>
-	</field>
+      	<field>
+      	  <field-name/>
+      	  <include-root>true</include-root>
+      	  <included-elements/>
+      	  <excluded-elements/>
+      	</field>
       </fields>
       <range-field-indexes/>
-      <geospatial-element-indexes/>
+
+      <geospatial-element-indexes>
+        <geospatial-element-index>
+          <namespace-uri>http://www.opengis.net/gml</namespace-uri>
+          <localname>pos</localname>
+          <coordinate-system>wgs84</coordinate-system>
+          <point-format>point</point-format>
+          <range-value-positions>false</range-value-positions>
+          <invalid-values>reject</invalid-values>
+        </geospatial-element-index>
+      </geospatial-element-indexes>
+
       <geospatial-element-child-indexes/>
       <geospatial-element-pair-indexes/>
       <geospatial-element-attribute-pair-indexes>
