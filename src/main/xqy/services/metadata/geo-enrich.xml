@@ -1,0 +1,12 @@
+<metadata>
+  <title>geo-enrich</title>
+  <description>
+    <div>
+      The Geo-Enrich service accepts a document and returns an enriched HTML document
+    </div>
+  </description>
+  <method name="GET">
+    <param name="text" />
+    <param name="country-code" />
+  </method>  
+</metadata>
