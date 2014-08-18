@@ -11,7 +11,7 @@ declare function code:transform(
     map:put(
       $content, 
       "value", 
-      document{ xdmp:xslt-invoke(/ext/geonames/xsl/admin1-code.xsl", $doc) }
+      document{ xdmp:xslt-invoke("/ext/geonames/xsl/admin1-code.xsl", $doc) }
     )
   return $content
 
