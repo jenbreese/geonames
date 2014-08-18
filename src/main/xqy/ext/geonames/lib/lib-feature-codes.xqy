@@ -11,7 +11,7 @@ declare function feature-code:transform(
     map:put(
       $content, 
       "value", 
-      document{ xdmp:xslt-invoke("/xsl/feature-code.xsl", $doc) }
+      document{ xdmp:xslt-invoke("/ext/geonames/xsl/feature-code.xsl", $doc) }
     )
   return $content
 
