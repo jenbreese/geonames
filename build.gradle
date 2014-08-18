@@ -2,11 +2,12 @@ buildscript {
   repositories {
     mavenCentral()
     maven {url "https://developer.marklogic.com/maven2/"}
+    maven {url "http://rjrudin.github.io/gradle-sandbox/snapshots"}
     mavenLocal()
   }
 
   dependencies {
-    classpath group:"com.marklogic", name:"ml-gradle", version:"0.1.+"
+    classpath group:"com.marklogic", name:"ml-gradle", version:"0.2"
   }
 }
 
