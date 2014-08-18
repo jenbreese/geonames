@@ -16,13 +16,20 @@
   <xsl:param name="admin2-code" />
   <xsl:param name="add-query" />
 
+
+
   <xsl:template match="/feature">
+    <xsl:variable name="name" select="name/text()" />
+    <xsl:variable name="asciiname" select="asciiname/text()" />
+    <xsl:variable name="altnames" select="fn:tokenize(//alternatenames/text(), ',')" />
+    <xsl:variable name="querynames" select="fn:distinct-values(($name, $asciiname, $altnames))" />
+
     <geoname>
       <id><xsl:value-of select="geonameid/text()" /></id>
       <names>
-        <name tag="main"><xsl:value-of select="name/text()" /></name>
-        <name tag="ascii"><xsl:value-of select="asciiname/text()" /></name>
-        <xsl:for-each select="fn:tokenize(//alternatenames/text(), ',')">
+        <name tag="main"><xsl:value-of select="$name" /></name>
+        <name tag="ascii"><xsl:value-of select="$asciiname" /></name>
+        <xsl:for-each select="$altnames">
           <name tag="alternate"><xsl:value-of select="." /></name>
         </xsl:for-each>
       </names>
@@ -34,7 +41,7 @@
       <xsl:copy-of select="cc2" />
       <xsl:choose>
         <xsl:when test="fn:not($admin1-code)">
-          <admin1-code />       
+          <admin1-code />
         </xsl:when>
         <xsl:otherwise>
           <xsl:copy-of select="$admin1-code" />
@@ -42,7 +49,7 @@
       </xsl:choose>
       <xsl:choose>
         <xsl:when test="fn:not($admin2-code)">
-          <admin2-code />       
+          <admin2-code />
         </xsl:when>
         <xsl:otherwise>
           <xsl:copy-of select="$admin2-code" />
@@ -57,19 +64,15 @@
       <xsl:copy-of select="modification-date" />
       <xsl:if test="fn:contains($add-query, 'true')">
       <query>
-      	<cts:or-query>
-      		<cts:word-query>
-	        	<cts:text><xsl:value-of select="name/text()" /></cts:text>
-        		<cts:option>exact</cts:option>
-      		</cts:word-query>
-      		<cts:word-query>
-	        	<cts:text><xsl:value-of select="asciiname/text()" /></cts:text>
-        		<cts:option>exact</cts:option>
-      		</cts:word-query>
-      	</cts:or-query>
+    		<cts:word-query>
+          <xsl:for-each select="$querynames">
+            <cts:text><xsl:value-of select="." /></cts:text>
+          </xsl:for-each>
+      		<cts:option>exact</cts:option>
+    		</cts:word-query>
       </query>
       </xsl:if>
-      	<!-- 
+      	<!--
       	<xsl:for-each select="fn:tokenize(//alternatenames/text(), ',')">
           <cts:word-query>
           	<cts:text><xsl:value-of select="." /></cts:text>
