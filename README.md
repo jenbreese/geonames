@@ -1,10 +1,15 @@
-PREREQUISITES
-=========
-1. JDK 1.7 
-2. Gradle 2.0
-3. ml-java project
+MarkLogic Geonames
+==========
 
-BUILDING GEONAMES APP
+### Prerequisites
+--------
+1. [MarkLogic](http://developer.marklogic.com/products)
+2. [JDK 1.7](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html) 
+3. [Gradle 2.0](http://www.gradle.org/downloads)
+4. [MarkLogic Content Pump](http://developer.marklogic.com/products)
+4. ml-java project
+
+### Instructions
 1. gradle mlInstallApp
 2. gradle mlConfigureApp
 
