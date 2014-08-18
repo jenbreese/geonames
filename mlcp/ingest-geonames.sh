@@ -12,5 +12,5 @@ mlcp.sh IMPORT \
   -namespace http://geonames.org \
   -options_file options.txt \
   -output_uri_prefix "/geonames/$COUNTRY/" \
-  -transform_module "/xqy/lib/lib-geonames.xqy" \
+  -transform_module "/ext/geonames/lib/lib-geonames.xqy" \
   -transform_namespace "http://geonames.org" 

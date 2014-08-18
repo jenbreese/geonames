@@ -11,6 +11,6 @@ mlcp.sh IMPORT \
   -namespace http://geonames.org/admin2Code \
   -options_file options.txt \
   -output_uri_prefix "/geonames/admin2Code/" \
-  -transform_module "/xqy/lib/lib-admin2-codes.xqy" \
+  -transform_module "/ext/geonames/lib/lib-admin2-codes.xqy" \
   -transform_namespace "http://geonames.org/admin2Code"
 

@@ -10,6 +10,6 @@ mlcp.sh IMPORT \
   -namespace http://geonames.org/featureCodes \
   -options_file options.txt \
   -output_uri_prefix "/geonames/featureCodes/" \
-  -transform_module "/xqy/lib/lib-feature-codes.xqy" \
+  -transform_module "/ext/geonames/lib/lib-feature-codes.xqy" \
   -transform_namespace "http://geonames.org/featureCodes"
 
