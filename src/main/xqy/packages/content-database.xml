@@ -14,7 +14,7 @@
       <retired-forest-count>0</retired-forest-count>
       <language>en</language>
       <stemmed-searches>basic</stemmed-searches>
-      <word-searches>true</word-searches>
+      <word-searches>false</word-searches>
       <word-positions>false</word-positions>
       <fast-phrase-searches>true</fast-phrase-searches>
       <fast-reverse-searches>true</fast-reverse-searches>
