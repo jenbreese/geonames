@@ -1,11 +1,12 @@
 PREREQUISITES
-1) JDK 1.7 
-2) Gradle 2.0
-3) ml-java project
+=========
+1. JDK 1.7 
+2. Gradle 2.0
+3. ml-java project
 
 BUILDING GEONAMES APP
-1) gradle mlInstallApp
-2) gradle mlConfigureApp
+1. gradle mlInstallApp
+2. gradle mlConfigureApp
 
 Make sure to remove any CPF domains from the geonames-content database
 
@@ -35,3 +36,8 @@ Loads the Seychellles geonames dataset into MarkLogic via mlcp
 ./load-geonames.sh all
 Loads all countries into MarkLogic
 
+
+API: http://<HOST>:8010/v1/resources/api
+geo-enrich: http://<host>:8010/v1/resources/geo-enrich
+
+Example: http://<host>:8010/v1/resources/geo-enrich?rs:text=I%20live%20in%20Paris%20and%20Normandy&rs:country-code=FR
