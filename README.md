@@ -1,5 +1,9 @@
-This repository will download and load the geonames.org gazetteer data into MarkLogic and set up an endpoint for simple geo entity extraction and enrichment. 
+PREREQUISITES
+1) JDK 1.7 
+2) Gradle 2.0
+3) ml-java project
 
+DOWNLOADING/LOADING GEONAMES
 All data is downloaded into a directory called data/.
 headers.sh is used to put the the tab delimited header on the country files that are downloaded.  By default they are not included.  
 
@@ -25,3 +29,6 @@ Loads the Seychellles geonames dataset into MarkLogic via mlcp
 ./load-geonames.sh all
 Loads all countries into MarkLogic
 
+BUILDING GEONAMES APP
+1) gradle mlInstallApp
+2) gradle mlConfigureApp
