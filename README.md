@@ -24,7 +24,6 @@ The geonames data is downloaded into a directory called data/.  The geonames met
 This will download and load all the geonames metadata into MarkLogic: countryCodes, admin codes, feature codes
 
 2) ./download-geonames.sh [2 character ISO Country Code | all]
-Examples: 
 ./download-geonames.sh SC  
 Downloads the geonames for Seychelles (a small data set)
 
