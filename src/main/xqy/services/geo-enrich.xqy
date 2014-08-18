@@ -13,31 +13,28 @@ declare function geo:get(
   as document-node()*
 {
 	let $doc := <doc>{ map:get($params, "text") }</doc>
-	let $country-code as xs:string := map:get($params, "country-code")
-  return geo:enrich($doc, $country-code)
-};
+	let $country-codes as xs:string := map:get($params, "country-code")
+  let $country-codes :=
+    for $code in $country-codes
+    return fn:tokenize($code, ",")
 
-declare function geo:post(
-  $context as map:map,
-  $params as map:map,
-  $input as document-node()*)
-  as document-node()*
-{
-  let $doc := <doc>{ map:get($params, "text") }</doc>
-  let $country-code as xs:string := map:get($params, "country-code")
-  return geo:enrich($doc, $country-code)
-};
+  let $feature-types as xs:string := map:get($params, "feature-type")
+  let $feature-types :=
+    for $ft in $feature-types
+    return fn:tokenize($ft, ",")
 
-
-declare function geo:enrich($doc as element(doc), $country-code as xs:string)
-  as document-node()
-{
   let $geos :=
-    cts:search(
-      fn:collection($country-code),
-      cts:reverse-query($doc),
-      "unfiltered"
-    )
+    if (fn:exists($country-codes) and fn:exists($feature-types)) then
+      cts:search(/gn:geoname[gn:country-code = $country-codes and gn:feature-code/gn:name = $feature-types],
+        cts:reverse-query($doc), "unfiltered")
+    else if (fn:exists($country-codes)) then
+      cts:search(/gn:geoname[gn:country-code = $country-codes],
+        cts:reverse-query($doc), "unfiltered")
+    else if (fn:exists($feature-types)) then
+      cts:search(/gn:geoname[gn:feature-code/gn:name = $feature-types],
+        cts:reverse-query($doc), "unfiltered")
+    else
+      cts:search(doc(), cts:reverse-query($doc), "unfiltered")
 
   let $_ :=
     for $geo in $geos
@@ -64,6 +61,55 @@ declare function geo:enrich($doc as element(doc), $country-code as xs:string)
     }
 };
 
+declare function geo:post(
+  $context as map:map,
+  $params as map:map,
+  $input as document-node()*)
+  as document-node()*
+{
+  let $doc := $input/*[1]
+
+  let $country-codes as xs:string := map:get($params, "country-code")
+  let $country-codes :=
+    for $code in $country-codes
+    return fn:tokenize($code, ",")
+
+  let $feature-types as xs:string := map:get($params, "feature-type")
+  let $feature-types :=
+    for $ft in $feature-types
+    return fn:tokenize($ft, ",")
+
+  let $geos :=
+    if (fn:exists($country-codes) and fn:exists($feature-types)) then
+      cts:search(/gn:geoname[gn:country-code = $country-codes and gn:feature-code/gn:name = $feature-types],
+        cts:reverse-query($doc), "unfiltered")
+    else if (fn:exists($country-codes)) then
+      cts:search(/gn:geoname[gn:country-code = $country-codes],
+        cts:reverse-query($doc), "unfiltered")
+    else if (fn:exists($feature-types)) then
+      cts:search(/gn:geoname[gn:feature-code/gn:name = $feature-types],
+        cts:reverse-query($doc), "unfiltered")
+    else
+      cts:search(doc(), cts:reverse-query($doc), "unfiltered")
+
+  let $_ :=
+    for $geo in $geos
+    return
+      xdmp:set($doc,
+        cts:highlight(
+          $doc,
+          cts:query($geo/gn:geoname/gn:query/element()),
+          <span xmlns="http://www.w3.org/1999/xhtml"
+            geonames-id="{ $geo/gn:geoname/gn:id/text() }">{ $cts:text }</span>
+        )
+      )
+
+  let $doc := geo:collapse-spans($doc, ())
+
+  return document { $doc }
+};
+
+
 declare function geo:collapse-spans($x as node()?, $map as map:map?)
 {
   if (fn:empty($x)) then
@@ -72,8 +118,8 @@ declare function geo:collapse-spans($x as node()?, $map as map:map?)
   typeswitch ($x)
 
   case element(html:span) return
-    (: if there's one node child and it's an element, we have nested spans :)
-    if (fn:count($x/node()) = 1 and fn:exists($x/element())) then
+    (: if there's one node child and it's a span element, we have nested spans :)
+    if (fn:count($x/node()) = 1 and fn:exists($x/element()) and fn:local-name($x/element()) = "span") then
       let $inner := geo:collapse-spans($x/element(), $map)
       return
         <span xmlns="http://www.w3.org/1999/xhtml">
