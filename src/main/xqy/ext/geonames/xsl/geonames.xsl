@@ -55,7 +55,8 @@
       <digital-elevation-model><xsl:value-of select="dem/text()" /></digital-elevation-model>
       <xsl:copy-of select="timezone" />
       <xsl:copy-of select="modification-date" />
-      <xsl:if test="$add-query = 'true'">
+      <xsl:if test="fn:contains($add-query, 'true')">
+      <query>
       	<cts:or-query>
       		<cts:word-query>
 	        	<cts:text><xsl:value-of select="name/text()" /></cts:text>
@@ -66,6 +67,7 @@
         		<cts:option>exact</cts:option>
       		</cts:word-query>
       	</cts:or-query>
+      </query>
       </xsl:if>
       	<!-- 
       	<xsl:for-each select="fn:tokenize(//alternatenames/text(), ',')">

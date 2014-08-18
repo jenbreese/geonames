@@ -57,7 +57,7 @@ declare function geonames:transform(
       map:put($params, "feature", $feature-code),
       map:put($params, "admin1-code", $admin1-code),
       map:put($params, "admin2-code", $admin2-code),
-      map:put($params, "add-query", geonames:filter-name($doc//geonames:names/geonames:name[@tag = "main"]/text()))
+      map:put($params, "add-query", geonames:filter-name($doc//geonames:name/text()))
     )
   let $_ := 
     map:put(
