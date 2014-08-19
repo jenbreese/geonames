@@ -13,12 +13,12 @@ declare function geo:get(
   as document-node()*
 {
 	let $doc := <doc>{ map:get($params, "text") }</doc>
-	let $country-codes as xs:string := map:get($params, "country-code")
+	let $country-codes as xs:string? := map:get($params, "country-code")
   let $country-codes :=
     for $code in $country-codes
     return fn:tokenize($code, ",")
 
-  let $feature-types as xs:string := map:get($params, "feature-type")
+  let $feature-types as xs:string? := map:get($params, "feature-type")
   let $feature-types :=
     for $ft in $feature-types
     return fn:tokenize($ft, ",")
@@ -69,12 +69,12 @@ declare function geo:post(
 {
   let $doc := $input/*[1]
 
-  let $country-codes as xs:string := map:get($params, "country-code")
+  let $country-codes as xs:string? := map:get($params, "country-code")
   let $country-codes :=
     for $code in $country-codes
     return fn:tokenize($code, ",")
 
-  let $feature-types as xs:string := map:get($params, "feature-type")
+  let $feature-types as xs:string? := map:get($params, "feature-type")
   let $feature-types :=
     for $ft in $feature-types
     return fn:tokenize($ft, ",")
