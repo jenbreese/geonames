@@ -196,7 +196,7 @@ declare function geo:geonames-summary($doc)
           element geoname {
             element geonames-id { $id },
             element count { $count },
-            element name { $name }
+            /gn:geoname[gn:id = $id]
           }
       },
       element by-feature-type {
