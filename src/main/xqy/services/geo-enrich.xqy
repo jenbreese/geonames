@@ -128,8 +128,6 @@ declare function geo:highlight($doc as element(), $geos as item()*)
       order by fn:string-length($text) descending
       return $text
 
-    let $log := xdmp:log($text-id-map)
-
     let $_ :=
       for $text in $texts
       let $ids := map:get($text-id-map, $text)
