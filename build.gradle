@@ -2,7 +2,7 @@ buildscript {
   repositories {
     mavenCentral()
     maven {url "https://developer.marklogic.com/maven2/"}
-    maven {url "http://rjrudin.github.io/gradle-sandbox/snapshots"}
+    maven {url "http://rjrudin.github.io/marklogic-java/releases"}
     mavenLocal()
   }
 
