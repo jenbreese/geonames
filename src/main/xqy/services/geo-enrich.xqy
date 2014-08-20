@@ -2,6 +2,7 @@ xquery version "1.0-ml";
 
 module namespace geo = "http://marklogic.com/rest-api/resource/geo-enrich";
 
+declare namespace fc = "http://geonames.org/featureCodes";
 declare namespace gn = "http://geonames.org";
 declare namespace html = "http://www.w3.org/1999/xhtml";
 
@@ -35,7 +36,7 @@ declare function geo:get(
       cts:search(/gn:geoname[gn:feature-code/gn:name = $feature-types],
         cts:reverse-query($doc), "unfiltered")
     else
-      cts:search(doc(), cts:reverse-query($doc), "unfiltered")
+      cts:search(/gn:geoname, cts:reverse-query($doc), "unfiltered")
 
   let $doc := geo:highlight($doc, $geos)
   let $doc := geo:collapse-spans($doc, ())
@@ -94,16 +95,22 @@ declare function geo:post(
   return document { $doc, $summary }
 };
 
-declare function geo:highlight($doc as element(), $geos as document-node()*)
+declare function geo:highlight($doc as element(), $geos as item()*)
   as element()
 {
   if (fn:empty($geos)) then
     $doc
   else
+    let $geos :=
+      for $geo in $geos
+      return
+        if ($geo instance of document-node()) then
+          $geo/geo:geoname
+        else
+          $geo
     let $text-id-map := map:map()
     let $_ :=
       for $geo in $geos
-      let $geo := $geo/gn:geoname
       let $id := $geo/fn:data(gn:id)
       let $texts := $geo/gn:query//fn:data(cts:text)
       for $text in $texts
@@ -140,7 +147,74 @@ declare function geo:highlight($doc as element(), $geos as document-node()*)
 
 declare function geo:geonames-summary($doc)
 {
-  <summary/>
+  let $spans := $doc//html:span[@geonames-id]
+  (: construct a map of geonames-ids and the number of times they occur in the document :)
+  let $id-count-map := map:map()
+  let $_ :=
+    for $span in $spans
+    let $ids := fn:tokenize($span/fn:data(@geonames-id), ",")
+    for $id in $ids
+    return
+      if (map:contains($id-count-map, $id)) then
+        map:put($id-count-map, $id, map:get($id-count-map, $id) + 1)
+      else
+        map:put($id-count-map, $id, 1)
+
+  (: get the inverse map, count to id :)
+  let $count-id-map := -$id-count-map
+  let $counts := map:keys($count-id-map)
+
+  (: sort the counts from high to low so that we can show the results in count order :)
+  let $counts :=
+    for $count in $counts
+    order by xs:integer($count) descending
+    return $count
+
+  (: construct a map of feature-code/name (aka feature-type) to the ids of that feature type :)
+  let $feature-type-id-map := map:map()
+  let $_ :=
+    for $id in map:keys($id-count-map)
+    let $feature-type := /gn:geoname[gn:id = $id]/fc:feature-code/fn:data(fc:name)
+    let $feature-type :=
+      if (fn:string-length($feature-type) = 0) then
+        "NO FEATURE CODE NAME ?"
+      else
+        $feature-type
+    return
+      map:put($feature-type-id-map, $feature-type,
+        ($id, map:get($feature-type-id-map, $feature-type)))
+
+  return
+    element summary {
+      element id-counts {
+        for $count in $counts
+        let $ids := map:get($count-id-map, $count)
+        for $id in $ids
+        let $name := /gn:geoname[gn:id = $id]/gn:names/gn:name[@tag = "main"]/fn:string(.)
+        return
+          element geoname {
+            element geonames-id { $id },
+            element count { $count },
+            element name { $name }
+          }
+      },
+      element by-feature-type {
+        for $feature-type in map:keys($feature-type-id-map)
+        let $ids := map:get($feature-type-id-map, $feature-type)
+        return
+          element feature-type {
+            element name { $feature-type },
+            element geonames-ids {
+              for $id in $ids
+              return
+                element geonames-id {
+                  $id
+                }
+            }
+          }
+      }
+    }
+
 };
 
 declare function geo:collapse-spans($x as node()?, $map as map:map?)
