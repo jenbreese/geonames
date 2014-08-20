@@ -115,12 +115,9 @@ declare function geo:highlight($doc as element(), $geos as item()*)
       for $geo in $geos
       let $id := $geo/fn:data(gn:id)
       let $texts := $geo/gn:query//fn:data(cts:text)
+      let $texts := libg:filter-names($texts)
       for $text in $texts
-      return
-        if ($text = $libg:EXCLUDED-NAMES) then
-          ()
-        else
-          map:put($text-id-map, $text, ($id, map:get($text-id-map, $text)))
+      return map:put($text-id-map, $text, ($id, map:get($text-id-map, $text)))
 
     let $texts := map:keys($text-id-map)
     let $texts :=
