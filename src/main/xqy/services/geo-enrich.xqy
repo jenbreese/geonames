@@ -7,6 +7,7 @@ declare namespace html = "http://www.w3.org/1999/xhtml";
 
 declare option xdmp:mapping "false";
 
+
 declare function geo:get(
   $context as map:map,
   $params  as map:map)
@@ -36,19 +37,10 @@ declare function geo:get(
     else
       cts:search(doc(), cts:reverse-query($doc), "unfiltered")
 
-  let $_ :=
-    for $geo in $geos
-    return
-      xdmp:set($doc,
-        cts:highlight(
-          $doc,
-          cts:query($geo/gn:geoname/gn:query/element()),
-          <span xmlns="http://www.w3.org/1999/xhtml"
-            geonames-id="{ $geo/gn:geoname/gn:id/text() }">{ $cts:text }</span>
-        )
-      )
-
+  let $doc := geo:highlight($doc, $geos)
   let $doc := geo:collapse-spans($doc, ())
+
+  let $summary := geo:geonames-summary($doc)
 
   return
     document {
@@ -58,6 +50,8 @@ declare function geo:get(
           <p xmlns="http://www.w3.org/1999/xhtml">{ $doc/node() }</p>
         </body>
       </html>
+      ,
+      $summary
     }
 };
 
@@ -90,25 +84,64 @@ declare function geo:post(
       cts:search(/gn:geoname[gn:feature-code/gn:name = $feature-types],
         cts:reverse-query($doc), "unfiltered")
     else
-      cts:search(doc(), cts:reverse-query($doc), "unfiltered")
+      cts:search(/gn:geoname, cts:reverse-query($doc), "unfiltered")
 
-  let $_ :=
-    for $geo in $geos
-    return
-      xdmp:set($doc,
-        cts:highlight(
-          $doc,
-          cts:query($geo/gn:geoname/gn:query/element()),
-          <span xmlns="http://www.w3.org/1999/xhtml"
-            geonames-id="{ $geo/gn:geoname/gn:id/text() }">{ $cts:text }</span>
-        )
-      )
-
+  let $doc := geo:highlight($doc, $geos)
   let $doc := geo:collapse-spans($doc, ())
 
-  return document { $doc }
+  let $summary := geo:geonames-summary($doc)
+
+  return document { $doc, $summary }
 };
 
+declare function geo:highlight($doc as element(), $geos as document-node()*)
+  as element()
+{
+  if (fn:empty($geos)) then
+    $doc
+  else
+    let $text-id-map := map:map()
+    let $_ :=
+      for $geo in $geos
+      let $geo := $geo/gn:geoname
+      let $id := $geo/fn:data(gn:id)
+      let $texts := $geo/gn:query//fn:data(cts:text)
+      for $text in $texts
+      return map:put($text-id-map, $text, ($id, map:get($text-id-map, $text)))
+
+    let $texts := map:keys($text-id-map)
+    let $texts :=
+      for $text in $texts
+      order by fn:string-length($text) descending
+      return $text
+
+    let $log := xdmp:log($text-id-map)
+
+    let $_ :=
+      for $text in $texts
+      let $ids := map:get($text-id-map, $text)
+      let $ids :=
+        for $id in $ids
+        order by xs:integer($id)
+        return $id
+      return
+        xdmp:set($doc,
+          cts:highlight(
+            $doc,
+            cts:word-query($text, "exact"),
+            <span xmlns="http://www.w3.org/1999/xhtml"
+              class="{ if (fn:count($ids) > 1) then "many" else "one" }"
+              geonames-id="{ fn:string-join($ids, ",") }">{ $cts:text }</span>
+          )
+        )
+
+    return $doc
+};
+
+declare function geo:geonames-summary($doc)
+{
+  <summary/>
+};
 
 declare function geo:collapse-spans($x as node()?, $map as map:map?)
 {
@@ -124,7 +157,8 @@ declare function geo:collapse-spans($x as node()?, $map as map:map?)
       return
         <span xmlns="http://www.w3.org/1999/xhtml">
         {
-          attribute { "geonames-id" } { fn:string-join(($x/@geonames-id, $inner/@geonames-id), ",") },
+          attribute geonames-id { fn:string-join(($x/@geonames-id, $inner/@geonames-id), ",") },
+          attribute class { "many" },
           $inner/node()
         }
         </span>

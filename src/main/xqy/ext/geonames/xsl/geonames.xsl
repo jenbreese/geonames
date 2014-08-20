@@ -14,15 +14,13 @@
   <xsl:param name="feature" />
   <xsl:param name="admin1-code" />
   <xsl:param name="admin2-code" />
-  <xsl:param name="add-query" />
-
+  <xsl:param name="query-names" /> <!-- filtered and de-duped name, ascii and alternate names -->
 
 
   <xsl:template match="/feature">
     <xsl:variable name="name" select="name/text()" />
     <xsl:variable name="asciiname" select="asciiname/text()" />
     <xsl:variable name="altnames" select="fn:tokenize(//alternatenames/text(), ',')" />
-    <xsl:variable name="querynames" select="fn:distinct-values(($name, $asciiname, $altnames))" />
 
     <geoname>
       <id><xsl:value-of select="geonameid/text()" /></id>
@@ -62,10 +60,10 @@
       <digital-elevation-model><xsl:value-of select="dem/text()" /></digital-elevation-model>
       <xsl:copy-of select="timezone" />
       <xsl:copy-of select="modification-date" />
-      <xsl:if test="fn:contains($add-query, 'true')">
+      <xsl:if test="fn:exists($query-names)">
       <query>
     		<cts:word-query>
-          <xsl:for-each select="$querynames">
+          <xsl:for-each select="$query-names">
             <cts:text><xsl:value-of select="." /></cts:text>
           </xsl:for-each>
       		<cts:option>exact</cts:option>
