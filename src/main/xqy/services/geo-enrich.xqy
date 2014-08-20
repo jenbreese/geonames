@@ -2,6 +2,8 @@ xquery version "1.0-ml";
 
 module namespace geo = "http://marklogic.com/rest-api/resource/geo-enrich";
 
+import module namespace libg = "http://geonames.org" at "/ext/geonames/lib/lib-geonames.xqy";
+
 declare namespace fc = "http://geonames.org/featureCodes";
 declare namespace gn = "http://geonames.org";
 declare namespace html = "http://www.w3.org/1999/xhtml";
@@ -114,7 +116,11 @@ declare function geo:highlight($doc as element(), $geos as item()*)
       let $id := $geo/fn:data(gn:id)
       let $texts := $geo/gn:query//fn:data(cts:text)
       for $text in $texts
-      return map:put($text-id-map, $text, ($id, map:get($text-id-map, $text)))
+      return
+        if ($text = $libg:EXCLUDED-NAMES) then
+          ()
+        else
+          map:put($text-id-map, $text, ($id, map:get($text-id-map, $text)))
 
     let $texts := map:keys($text-id-map)
     let $texts :=
