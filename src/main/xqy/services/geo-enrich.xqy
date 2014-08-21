@@ -181,14 +181,11 @@ declare function geo:highlight-and-summary($doc as element(), $geos as item()*)
       else
         map:put($id-count-map, $id, 1)
 
-  (: construct a map of matching text to the number of times they occur in the document,
-     a join on matching-text-id-map and id-count-map :)
+  (: construct a map of matching text to the number of times they occur in the document :)
   let $match-count-map := map:map()
   let $_ :=
     for $text in map:keys($matching-text-id-map)
-    let $ids := map:get($matching-text-id-map, $text)
-    let $first-id := $ids[1]
-    let $count := map:get($id-count-map, $first-id)
+    let $count := fn:count($doc//html:span[@geonames-id and . = $text])
     return map:put($match-count-map, $text, $count)
 
   (: get the inverse map, count to id :)
