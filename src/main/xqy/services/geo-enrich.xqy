@@ -16,7 +16,14 @@ declare function geo:get(
   $params  as map:map)
   as document-node()*
 {
-	let $doc := <doc>{ map:get($params, "text") }</doc>
+	let $doc :=
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head />
+      <body>
+        <p>{ map:get($params, "text") }</p>
+      </body>
+    </html>
+
 	let $country-codes as xs:string? := map:get($params, "country-code")
   let $country-codes :=
     for $code in $country-codes
@@ -29,33 +36,18 @@ declare function geo:get(
 
   let $geos :=
     if (fn:exists($country-codes) and fn:exists($feature-types)) then
-      cts:search(/gn:geoname[gn:country-code = $country-codes and gn:feature-code/gn:name = $feature-types],
+      cts:search(/gn:geoname[gn:country-code = $country-codes and fc:feature-code/fc:name = $feature-types],
         cts:reverse-query($doc), "unfiltered")
     else if (fn:exists($country-codes)) then
       cts:search(/gn:geoname[gn:country-code = $country-codes],
         cts:reverse-query($doc), "unfiltered")
     else if (fn:exists($feature-types)) then
-      cts:search(/gn:geoname[gn:feature-code/gn:name = $feature-types],
+      cts:search(/gn:geoname[fc:feature-code/fc:name = $feature-types],
         cts:reverse-query($doc), "unfiltered")
     else
       cts:search(/gn:geoname, cts:reverse-query($doc), "unfiltered")
 
-  let $doc := geo:highlight($doc, $geos)
-  let $doc := geo:collapse-spans($doc, ())
-
-  let $summary := geo:geonames-summary($doc)
-
-  return
-    document {
-      <html xmlns="http://www.w3.org/1999/xhtml">
-        <head />
-        <body>
-          <p xmlns="http://www.w3.org/1999/xhtml">{ $doc/node() }</p>
-        </body>
-      </html>
-      ,
-      $summary
-    }
+  return geo:highlight-and-summary($doc, $geos)
 };
 
 declare function geo:post(
@@ -78,31 +70,27 @@ declare function geo:post(
 
   let $geos :=
     if (fn:exists($country-codes) and fn:exists($feature-types)) then
-      cts:search(/gn:geoname[gn:country-code = $country-codes and gn:feature-code/gn:name = $feature-types],
+      cts:search(/gn:geoname[gn:country-code = $country-codes and fc:feature-code/fc:name = $feature-types],
         cts:reverse-query($doc), "unfiltered")
     else if (fn:exists($country-codes)) then
       cts:search(/gn:geoname[gn:country-code = $country-codes],
         cts:reverse-query($doc), "unfiltered")
     else if (fn:exists($feature-types)) then
-      cts:search(/gn:geoname[gn:feature-code/gn:name = $feature-types],
+      cts:search(/gn:geoname[fc:feature-code/fc:name = $feature-types],
         cts:reverse-query($doc), "unfiltered")
     else
       cts:search(/gn:geoname, cts:reverse-query($doc), "unfiltered")
 
-  let $doc := geo:highlight($doc, $geos)
-  let $doc := geo:collapse-spans($doc, ())
-
-  let $summary := geo:geonames-summary($doc)
-
-  return document { $doc, $summary }
+  return geo:highlight-and-summary($doc, $geos)
 };
 
-declare function geo:highlight($doc as element(), $geos as item()*)
-  as element()
+declare function geo:highlight-and-summary($doc as element(), $geos as item()*)
+  as document-node()
 {
   if (fn:empty($geos)) then
-    $doc
+    document { $doc, <summary/> }
   else
+    (: get matching geonames as element, not document-node :)
     let $geos :=
       for $geo in $geos
       return
@@ -110,44 +98,76 @@ declare function geo:highlight($doc as element(), $geos as item()*)
           $geo/geo:geoname
         else
           $geo
-    let $text-id-map := map:map()
+
+    (: construct a map of query text to geoname ids with that text :)
+    let $all-text-id-map := map:map()
     let $_ :=
       for $geo in $geos
       let $id := $geo/fn:data(gn:id)
       let $texts := $geo/gn:query//fn:data(cts:text)
       let $texts := libg:filter-names($texts)
       for $text in $texts
-      return map:put($text-id-map, $text, ($id, map:get($text-id-map, $text)))
+      return map:put($all-text-id-map, $text, ($id, map:get($all-text-id-map, $text)))
 
-    let $texts := map:keys($text-id-map)
+    (: get the query texts as a sequence and sort on descending length :)
+    let $texts := map:keys($all-text-id-map)
     let $texts :=
       for $text in $texts
       order by fn:string-length($text) descending
       return $text
 
+    (: construct a map of query text that matches the document to the geoname ids with that text. :)
+    let $matching-text-id-map := map:map()
+    let $match-superstring-map := map:map()
     let $_ :=
       for $text in $texts
-      let $ids := map:get($text-id-map, $text)
+      let $current-matches := map:keys($matching-text-id-map)
+      let $_ :=
+        for $word in $current-matches
+        return
+          if (fn:contains($word, $text)) then
+            map:put($match-superstring-map, $text, ($word, map:get($match-superstring-map, $text)))
+          else
+            ()
+      let $superstrings := map:get($match-superstring-map, $text)
+      let $query := geo:not-in-query($text, $superstrings)
+      return
+        if (cts:contains($doc, $query)) then
+          map:put($matching-text-id-map, $text, map:get($all-text-id-map, $text))
+        else
+          ()
+
+    (: get the matching query texts as a sequence and sort on descending length :)
+    let $texts := map:keys($matching-text-id-map)
+    let $texts :=
+      for $text in $texts
+      order by fn:string-length($text) descending
+      return $text
+
+    (: highlight in order of descending length to minimize broken-up highlighting spans :)
+    let $_ :=
+      for $text in $texts
+      (: get the ids and sort them (aesthetic) :)
+      let $ids := map:get($matching-text-id-map, $text)
       let $ids :=
         for $id in $ids
         order by xs:integer($id)
         return $id
+      let $superstrings := map:get($match-superstring-map, $text)
+      let $query := geo:not-in-query($text, $superstrings)
       return
         xdmp:set($doc,
           cts:highlight(
             $doc,
-            cts:word-query($text, "exact"),
+            $query,
             <span xmlns="http://www.w3.org/1999/xhtml"
               class="{ if (fn:count($ids) > 1) then "many" else "one" }"
               geonames-id="{ fn:string-join($ids, ",") }">{ $cts:text }</span>
           )
         )
 
-    return $doc
-};
+  let $doc := geo:collapse-spans($doc, ())
 
-declare function geo:geonames-summary($doc)
-{
   let $spans := $doc//html:span[@geonames-id]
   (: construct a map of geonames-ids and the number of times they occur in the document :)
   let $id-count-map := map:map()
@@ -161,9 +181,19 @@ declare function geo:geonames-summary($doc)
       else
         map:put($id-count-map, $id, 1)
 
+  (: construct a map of matching text to the number of times they occur in the document,
+     a join on matching-text-id-map and id-count-map :)
+  let $match-count-map := map:map()
+  let $_ :=
+    for $text in map:keys($matching-text-id-map)
+    let $ids := map:get($matching-text-id-map, $text)
+    let $first-id := $ids[1]
+    let $count := map:get($id-count-map, $first-id)
+    return map:put($match-count-map, $text, $count)
+
   (: get the inverse map, count to id :)
-  let $count-id-map := -$id-count-map
-  let $counts := map:keys($count-id-map)
+  let $count-match-map := -$match-count-map
+  let $counts := map:keys($count-match-map)
 
   (: sort the counts from high to low so that we can show the results in count order :)
   let $counts :=
@@ -185,18 +215,20 @@ declare function geo:geonames-summary($doc)
       map:put($feature-type-id-map, $feature-type,
         ($id, map:get($feature-type-id-map, $feature-type)))
 
-  return
+  let $summary :=
     element summary {
       element id-counts {
         for $count in $counts
-        let $ids := map:get($count-id-map, $count)
-        for $id in $ids
-        let $name := /gn:geoname[gn:id = $id]/gn:names/gn:name[@tag = "main"]/fn:string(.)
+        let $matches := map:get($count-match-map, $count)
+        for $match in $matches
         return
-          element geoname {
-            element geonames-id { $id },
+          element geonamegroup {
+            element querymatch { $match },
             element count { $count },
-            /gn:geoname[gn:id = $id]
+            element geonameidlist {
+              let $ids := map:get($matching-text-id-map, $match)
+              return /gn:geoname[gn:id = $ids]
+            }
           }
       },
       element by-feature-type {
@@ -216,6 +248,19 @@ declare function geo:geonames-summary($doc)
       }
     }
 
+    return document { $doc, $summary }
+};
+
+declare function geo:not-in-query($text as xs:string, $superstrings as xs:string*)
+  as cts:query
+{
+  if (fn:exists($superstrings)) then
+    cts:not-in-query(
+      cts:word-query($text, "exact"),
+      cts:word-query($superstrings, "exact")
+    )
+  else
+    cts:word-query($text, "exact")
 };
 
 declare function geo:collapse-spans($x as node()?, $map as map:map?)
