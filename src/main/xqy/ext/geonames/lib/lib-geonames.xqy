@@ -51,8 +51,6 @@ declare function geonames:filter-names(
   $names as xs:string*)
   as xs:string*
 {
-  let $log := xdmp:log($EXCLUDED-NAMES-FROM-FILE)
-
   for $name in $names
   return
     if (map:contains($LC-EXCLUDED-MAP, fn:lower-case($name))) then
