@@ -6,6 +6,18 @@ declare namespace fc = "http://geonames.org/featureCodes";
 declare namespace a1 = "http://geonames.org/admin1Code";
 declare namespace a2 = "http://geonames.org/admin2Code";
 
+declare variable $EXCLUDED-NAMES-FILE :=
+  xdmp:eval(
+    'fn:doc("/ext/geonames/config/excluded-names.xml")',
+    (),
+     <options xmlns="xdmp:eval">
+      <database>{ xdmp:modules-database() }</database>
+    </options>
+  )
+;
+
+declare variable $EXCLUDED-NAMES-FROM-FILE := $EXCLUDED-NAMES-FILE//fn:data(x);
+
 (: excluded names list started with list from an earlier WB POC :)
 (: https://github.com/marklogic/WBG-POC-II/blob/b754f31acd55f2f3f12bafee0b7a4fc4b9c3a20b/poc-roxy/src/pipelines/email-city-process.xqy :)
 declare variable $EXCLUDED-NAMES :=
@@ -29,7 +41,7 @@ declare variable $EXCLUDED-NAMES :=
 declare variable $LC-EXCLUDED-MAP :=
   let $map := map:map()
   let $_ :=
-    for $name in $EXCLUDED-NAMES
+    for $name in ($EXCLUDED-NAMES, $EXCLUDED-NAMES-FROM-FILE)
     return map:put($map, fn:lower-case($name), 1)
   return $map
 ;
@@ -39,6 +51,8 @@ declare function geonames:filter-names(
   $names as xs:string*)
   as xs:string*
 {
+  let $log := xdmp:log($EXCLUDED-NAMES-FROM-FILE)
+
   for $name in $names
   return
     if (map:contains($LC-EXCLUDED-MAP, fn:lower-case($name))) then
