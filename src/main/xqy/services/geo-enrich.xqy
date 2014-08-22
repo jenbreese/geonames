@@ -10,6 +10,8 @@ declare namespace html = "http://www.w3.org/1999/xhtml";
 
 declare option xdmp:mapping "false";
 
+declare variable $USE-POPULATION := fn:true();
+
 
 declare function geo:get(
   $context as map:map,
@@ -133,7 +135,14 @@ declare function geo:highlight-and-summary($doc as element(), $geos as item()*)
       let $query := geo:not-in-query($text, $superstrings)
       return
         if (cts:contains($doc, $query)) then
-          map:put($matching-text-id-map, $text, map:get($all-text-id-map, $text))
+          map:put($matching-text-id-map, $text,
+            let $ids := map:get($all-text-id-map, $text)
+            return
+              if ($USE-POPULATION) then
+                geo:highest-population-ids($ids)
+              else
+                $ids
+          )
         else
           ()
 
@@ -153,6 +162,8 @@ declare function geo:highlight-and-summary($doc as element(), $geos as item()*)
         for $id in $ids
         order by xs:integer($id)
         return $id
+      (: use previously-calculated super strings to build not-in-query,
+         e.g. highlight "York City", but not if it's a part of "New York City" :)
       let $superstrings := map:get($match-superstring-map, $text)
       let $query := geo:not-in-query($text, $superstrings)
       return
@@ -246,6 +257,12 @@ declare function geo:highlight-and-summary($doc as element(), $geos as item()*)
     }
 
     return document { $doc, $summary }
+};
+
+declare function geo:highest-population-ids($ids as xs:string+) as xs:string+
+{
+  let $max := fn:max(/gn:geoname[gn:id = $ids]/xs:integer(gn:population))
+  return /gn:geoname[gn:id = $ids and gn:population = $max]/fn:data(gn:id)
 };
 
 declare function geo:not-in-query($text as xs:string, $superstrings as xs:string*)
