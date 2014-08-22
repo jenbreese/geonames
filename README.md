@@ -8,14 +8,13 @@ The MarkLogic geonames project is a simple location extractor and enrichment ser
 2. [JDK 1.7](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html) 
 3. [Gradle 2.0](http://www.gradle.org/downloads)
 4. [MarkLogic Content Pump](http://developer.marklogic.com/products)
-5. ml-java project
+5. ml-java project (the dependency is indicated in build.gradle)
 6. Linux (tested with CentOS 6)
 
 ### Instructions
-1. ./ml-java/gradle publish
-2. ./geonames/gradle mlInstallApp
-3. ./geonames/gradle mlConfigureApp
-4. Remove any CPF domains from the geonames-content database
+1. ./geonames/gradle mlInstallApp
+2. ./geonames/gradle mlConfigureApp
+3. Remove any CPF domains from the geonames-content database
 
 ### Downloading Geonames
 
