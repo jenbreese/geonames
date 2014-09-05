@@ -361,6 +361,17 @@
               }
             };
             return this.callExtension('geo-enrich', settings);
+          },
+          countries: function(abbr, code) {
+            // build settings
+            var settings = {
+              method: 'GET',
+              params: {
+                'rs:abbr': abbr,
+                'rs:country-code': code
+              }
+            };
+            return this.callExtension('country', settings);
           }
         };
 

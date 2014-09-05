@@ -30,6 +30,7 @@ as document-node()*
       if ($abbr)
       then
         for $country in /cc:country
+        order by $country/cc:Country
         return element cc:country { $country/cc:Country, $country/cc:ISO }
       else /cc:country
     }

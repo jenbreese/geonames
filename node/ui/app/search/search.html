@@ -2,7 +2,7 @@
 <div class="row">
   <div>
     <textarea class="form-control" rows="3" ng-model="model.text"></textarea>
-    <select ng-model="model.code"
+    <select ng-model="model.code" ng-options="country.ISO as country.Country for country in model.countries"><option value="world">World</option></select>
     <button type="submit" class="btn btn-default" ng-click="search()">Submit</button>
   </div>
   <div>

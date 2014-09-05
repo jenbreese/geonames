@@ -8,7 +8,8 @@
   <method name="GET">
     <param name="text" />
     <param name="country-code" />
-  </method>  
+    <param name="format" />
+  </method>
   <method name="POST">
   	<param name="content" />
   	<param name="country-code" />

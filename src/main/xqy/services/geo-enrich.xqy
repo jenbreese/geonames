@@ -28,7 +28,7 @@ declare function geo:get(
         <p>{ map:get($params, "text") }</p>
       </body>
     </html>
-
+  let $format as xs:string? := map:get($params, "format")
 	let $country-codes as xs:string? := map:get($params, "country-code")
   let $country-codes :=
     for $code in $country-codes
@@ -51,8 +51,17 @@ declare function geo:get(
         cts:reverse-query($doc), "unfiltered")
     else
       cts:search(/gn:geoname, cts:reverse-query($doc), "unfiltered")
+  let $doc as document-node()* := geo:highlight-and-summary($doc, $geos)
+  return
+    if (fn:exists($format) and $format = "json") then
+      let $config := json:config("custom")
+      let $_ := map:put($config, "array-element-names", (xs:QName("geonamegroup"),fn:QName("http://geonames.org", "geoname"),fn:QName("http://geonames.org", "name")))
+      let $_ := map:put($context,"output-types","application/json")
 
-  return geo:highlight-and-summary($doc, $geos)
+      return document { text { json:transform-to-json($doc/summary, $config) } }
+    else $doc
+
+
 };
 
 declare function geo:post(

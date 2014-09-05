@@ -5,8 +5,10 @@
     .controller('SearchCtrl', ['$scope', 'MLRest', '$location', function ($scope, mlRest, $location) {
       var model = {
         selected: [],
-        text: 'Utah',
-        code: 'US'
+        text: '',
+        code: '',
+        countries: [],
+        search: []
       };
 
       function updateSearchResults(data) {
@@ -14,7 +16,11 @@
       }
 
       (function init() {
-        mlRest.enrich(model.text, model.code).then(updateSearchResults);
+        //mlRest.enrich(model.text, model.code).then(updateSearchResults);
+        mlRest.countries("true").then(function(data) {
+          model.countries = data.countries.country;
+          model.countries.unshift({Country: "World", ISO: ""});
+        });
       })();
 
       angular.extend($scope, {
