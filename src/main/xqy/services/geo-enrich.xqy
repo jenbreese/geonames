@@ -3,6 +3,7 @@ xquery version "1.0-ml";
 module namespace geo = "http://marklogic.com/rest-api/resource/geo-enrich";
 
 import module namespace libg = "http://geonames.org" at "/ext/geonames/lib/lib-geonames.xqy";
+import module namespace json="http://marklogic.com/xdmp/json" at "/MarkLogic/json/json.xqy";
 
 declare namespace fc = "http://geonames.org/featureCodes";
 declare namespace gn = "http://geonames.org";
