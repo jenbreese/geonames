@@ -1,0 +1,12 @@
+<metadata>
+  <title>country</title>
+  <description>
+    <div>
+      The Country service returns country information in json format
+    </div>
+  </description>
+  <method name="GET">
+    <param name="country-code" />
+    <param name="abbr" />
+  </method>
+</metadata>
