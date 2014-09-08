@@ -56,7 +56,13 @@ declare function geo:get(
   return
     if (fn:exists($format) and $format = "json") then
       let $config := json:config("custom")
-      let $_ := map:put($config, "array-element-names", (xs:QName("geonamegroup"),fn:QName("http://geonames.org", "geoname"),fn:QName("http://geonames.org", "name")))
+      let $_ := map:put($config, "array-element-names", (
+        xs:QName("geonamegroup"),
+        fn:QName("http://geonames.org", "geoname"),
+        fn:QName("http://geonames.org", "name"),
+        fn:QName("http://geonames.org/admin1Code", "name"),
+        fn:QName("http://geonames.org/admin2Code", "name")
+      ))
       let $_ := map:put($context,"output-types","application/json")
 
       return document { text { json:transform-to-json(element summary { $doc/summary/*, element query {xdmp:quote($doc//*:p) } }, $config) } }
