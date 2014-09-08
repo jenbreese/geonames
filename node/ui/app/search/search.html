@@ -11,7 +11,13 @@
       <h4 ng-bind="result.querymatch"></h4>
       <div ng-repeat="match in result.geonameidlist.geoname">
         <div class="row">
-          <div class="col-md-11 col-sm-offset-1"><span ng-repeat='name in match.names.name | filter:{tag: "main"}' ng-bind="name._value"></span>, <span ng-bind="match['feature-code'].name"></span></div>
+          <div class="col-md-11 col-sm-offset-1">
+            <a ng-href="http://www.geonames.org/{{match.id}}/" ng-repeat='name in match.names.name | filter:{tag: "main"}' ng-bind="name._value"></a>,
+            <a ng-href="http://www.geonames.org/{{getCountryGeonamesIdByCode(match['country-code'])}}" ng-bind="getCountryByCode('{{match['country-code']}}')"></a>,
+            <a ng-href="http://www.geonames.org/{{match['admin1-code'].geonamesid}}/" ng-bind="getMain(match['admin1-code'].name)"></a>,
+            <a ng-href="http://www.geonames.org/{{match.admin2.geonamesid}}/" ng-bind="getMain(match.admin2.name)"></a>,
+            <span ng-bind="match['feature-code'].name"></span>
+          </div>
         </div>
         <div class="row">
             <div class="small col-sm-10 col-sm-offset-2">
