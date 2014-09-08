@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('geonames.search')
-    .controller('SearchCtrl', ['$scope', 'MLRest', '$location', function ($scope, mlRest, $location) {
+    .controller('SearchCtrl', ['$scope', 'MLRest', '$location', '$sce', function ($scope, mlRest, $location, $sce) {
       var model = {
         selected: [],
         text: '',
@@ -28,6 +28,9 @@
         search: function() {
           mlRest.enrich(model.text, model.code).then(updateSearchResults);
           $location.path('/');
+        },
+        renderQuery: function() {
+          return model.search.summary ? $sce.trustAsHtml(model.search.summary.query) : '';
         }
       });
 
