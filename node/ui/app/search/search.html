@@ -7,8 +7,24 @@
   </div>
   <div>
     <div ng-bind-html="renderQuery()"></div>
-    <pre>
-{{model.search}}
-      </pre>
+    <div ng-repeat="result in model.search.summary['id-counts'].geonamegroup">
+      <h4 ng-bind="result.querymatch"></h4>
+      <div ng-repeat="match in result.geonameidlist.geoname">
+        <div class="row">
+          <div class="col-md-11 col-sm-offset-1"><span ng-repeat='name in match.names.name | filter:{tag: "main"}' ng-bind="name._value"></span>, <span ng-bind="match['feature-code'].name"></span></div>
+        </div>
+        <div class="row">
+            <div class="small col-sm-10 col-sm-offset-2">
+              <span ng-repeat="name in match.names.name">{{name._value}}, </span>
+            </div>
+        </div>
+        <div class="row">
+          <div class="small col-sm-10 col-sm-offset-2">
+            <span ng-bind="match.Point.pos"></span>
+          </div>
+        </div>
+
+      </div>
+
   </div>
 </div>
