@@ -358,7 +358,7 @@
               params: {
                 'rs:text': text,
                 'rs:country-code': code,
-                'rs:format': "json"
+                'rs:format': 'json'
               }
             };
             return this.callExtension('geo-enrich', settings);
