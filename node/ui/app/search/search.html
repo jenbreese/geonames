@@ -4,6 +4,7 @@
   <div class="search">
     <textarea class="form-control" rows="3" ng-model="model.text"></textarea>
     <select class="form-control pull-left" ng-model="model.code" ng-options="country.ISO as country.Country for country in model.countries"><option value="world">World</option></select>
+    <select class="form-control pull-left" ng-model="model.feature" ng-options="feature.name for feature in model.features"></select>
     <button type="submit" class="btn btn-default pull-left" ng-click="search()">Submit</button>
   </div>
   <div>

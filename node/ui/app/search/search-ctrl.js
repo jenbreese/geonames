@@ -7,7 +7,9 @@
         selected: [],
         text: '',
         code: '',
+        feature: { name: ''},
         countries: [],
+        features: [],
         search: []
       };
 
@@ -21,12 +23,15 @@
           model.countries = data.countries.country;
           model.countries.unshift({Country: 'World', ISO: ''});
         });
+        mlRest.features('true').then(function(data) {
+          model.features = data.features['feature-code'];
+        });
       })();
 
       angular.extend($scope, {
         model: model,
         search: function() {
-          mlRest.enrich(model.text, model.code).then(updateSearchResults);
+          mlRest.enrich(model.text, model.code, model.feature.name).then(updateSearchResults);
           $location.path('/');
         },
         renderQuery: function() {
@@ -36,19 +41,19 @@
           var found = $filter('filter')(model.countries, {ISO: code});
           if (found.length) {
             return found[0].Country;
-          } else { return ''}
+          } else { return '';}
         },
         getMain: function(names) {
-          var found = $filter('filter')(names, {tag: "main"});
+          var found = $filter('filter')(names, {tag: 'main'});
           if (found.length) {
             return found[0]._value;
-          } else {return ''}
+          } else {return '';}
         },
         getCountryGeonamesIdByCode: function(code) {
           var found = $filter('filter')(model.countries, {ISO: code});
           if (found.length) {
             return found[0].geonameid;
-          } else { return ''}
+          } else { return '';}
         }
       });
 

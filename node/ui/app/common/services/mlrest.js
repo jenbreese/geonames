@@ -351,13 +351,14 @@
           callExtension: function(extensionName, settings) {
             return this.advancedCall('/v1/resources/'+extensionName, settings);
           },
-          enrich: function(text, code) {
+          enrich: function(text, code, feature) {
             // build settings
             var settings = {
               method: 'GET',
               params: {
                 'rs:text': text,
                 'rs:country-code': code,
+                'rs:feature-type': feature,
                 'rs:format': 'json'
               }
             };
@@ -373,6 +374,17 @@
               }
             };
             return this.callExtension('country', settings);
+          },
+          features: function(abbr, code) {
+            // build settings
+            var settings = {
+              method: 'GET',
+              params: {
+                'rs:abbr': abbr,
+                'rs:feature-code': code
+              }
+            };
+            return this.callExtension('feature', settings);
           }
         };
 
