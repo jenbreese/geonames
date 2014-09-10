@@ -1,0 +1,12 @@
+<metadata>
+  <title>feature</title>
+  <description>
+    <div>
+      The Feature Code service returns feature code information in json format
+    </div>
+  </description>
+  <method name="GET">
+    <param name="feature-code" />
+    <param name="abbr" />
+  </method>
+</metadata>
