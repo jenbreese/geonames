@@ -1,6 +1,6 @@
 xquery version "1.0-ml";
 
-module namespace feature-code = "http://marklogic.com/rest-api/resource/feature-code";
+module namespace feature-code = "http://marklogic.com/rest-api/resource/feature";
 
 import module namespace json="http://marklogic.com/xdmp/json"
 at "/MarkLogic/json/json.xqy";
